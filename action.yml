@@ -5,9 +5,6 @@ inputs:
     description: 'New version to set in package.json'
     required: true
     type: string
-secrets:
-  GH_APP_PRIVATE_KEY:
-    required: true
 
 jobs:
   update_version:
@@ -19,7 +16,7 @@ jobs:
       uses: peter-murray/workflow-application-token-action@v3
       with:
         application_id: ${{ env.APP_ID }}
-        application_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+        application_private_key: ${{ env.GH_APP_PRIVATE_KEY }}
       
     - name: Checkout repository
       id: checkout_repo
