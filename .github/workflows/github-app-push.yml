@@ -29,6 +29,16 @@ jobs:
       with: 
         token: ${{ steps.get_workflow_token.outputs.token }}
 
+    - name: Check if version format is valid
+      id: check_version_format
+      run: |
+        if [[ ! "${{ inputs.new_version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "Invalid version format: ${{ inputs.new_version }}. Expected format: X.Y.Z"
+          exit 1
+        else
+          echo "Version format is valid: ${{ inputs.new_version }}"
+        fi
+
     - name: Check if version already exists
       id: check_version
       if: steps.checkout_repo.conclusion == 'success'
