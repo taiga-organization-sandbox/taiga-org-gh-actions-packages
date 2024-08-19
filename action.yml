@@ -1,15 +1,13 @@
 name: ⭐️Update Version via GitHub App (Package)
 
-on:
-  workflow_call:
-    inputs:
-      new_version:
-        description: 'New version to set in package.json'
-        required: true
-        type: string
-    secrets:
-      GH_APP_PRIVATE_KEY:
-        required: true
+inputs:
+  new_version:
+    description: 'New version to set in package.json'
+    required: true
+    type: string
+secrets:
+  GH_APP_PRIVATE_KEY:
+    required: true
 
 jobs:
   update_version:
