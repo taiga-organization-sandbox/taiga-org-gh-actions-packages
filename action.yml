@@ -1,6 +1,6 @@
 ---
 
-name: ⭐️Update Version via GitHub App (Package)
+name: taiga-org-gh-actions-packages
 
 inputs:
   new_version:
