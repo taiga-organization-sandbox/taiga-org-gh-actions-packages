@@ -1,5 +1,3 @@
----
-
 name: taiga-org-gh-actions-packages
 
 inputs:
@@ -20,7 +18,7 @@ jobs:
       id: get_workflow_token
       uses: peter-murray/workflow-application-token-action@v3
       with:
-        application_id: ${{ vars.APP_ID }}
+        application_id: ${{ env.APP_ID }}
         application_private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
       
     - name: Checkout repository
@@ -32,31 +30,31 @@ jobs:
     - name: Check if version format is valid
       id: check_version_format
       run: |
-        if [[ ! "${{ inputs.new_version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-          echo "Invalid version format: ${{ inputs.new_version }}. Expected format: X.Y.Z"
+        if [[ ! "${{ github.event.inputs.new_version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "Invalid version format: ${{ github.event.inputs.new_version }}. Expected format: X.Y.Z"
           exit 1
         else
-          echo "Version format is valid: ${{ inputs.new_version }}"
+          echo "Version format is valid: ${{ github.event.inputs.new_version }}"
         fi
 
     - name: Check if version already exists
       id: check_version
       if: steps.checkout_repo.conclusion == 'success'
       run: |
-        echo "Checking for version: v${{ inputs.new_version }}"
+        echo "Checking for version: v${{ github.event.inputs.new_version }}"
         git fetch --tags
-        if git rev-parse "refs/tags/v${{ inputs.new_version }}" >/dev/null 2>&1; then
-          echo "Version v${{ inputs.new_version }} already exists."
+        if git rev-parse "refs/tags/v${{ github.event.inputs.new_version }}" >/dev/null 2>&1; then
+          echo "Version v${{ github.event.inputs.new_version }} already exists."
           exit 1
         else
-          echo "Version v${{ inputs.new_version }} does not exist."
+          echo "Version v${{ github.event.inputs.new_version }} does not exist."
         fi
 
     - name: Update version in package.json
       id: update_package_json
       if: steps.check_version.conclusion == 'success'
       run: |
-        jq --arg new_version "${{ inputs.new_version }}" '.version = $new_version' package.json > tmp.json && mv tmp.json package.json
+        jq --arg new_version "${{ github.event.inputs.new_version }}" '.version = $new_version' package.json > tmp.json && mv tmp.json package.json
 
     - name: Commit and push changes
       id: commit_push
@@ -77,5 +75,5 @@ jobs:
         git config --global user.email 'github-actions@github.com'
         git checkout main
         git pull origin main
-        git tag v${{ inputs.new_version }}
-        git push origin v${{ inputs.new_version }}
+        git tag v${{ github.event.inputs.new_version }}
+        git push origin v${{ github.event.inputs.new_version }}
